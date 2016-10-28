@@ -11,13 +11,17 @@ import AVFoundation
 
 class PlaySoundsViewController: UIViewController {
     
-    var recordedAudioURL: NSURL!
+    // MARK: Class Variables
+    
+    var recordedAudioURL: URL!
     var audioFile: AVAudioFile!
     var audioEngine: AVAudioEngine!
     var audioPlayerNode: AVAudioPlayerNode!
     var stopTimer: Timer!
     
-    enum ButtonType: Int{ case Slow = 0, Fast, Chipmunk, Vader, Echo, Reverb }
+    enum ButtonType: Int{ case slow = 0, fast, chipmunk, vader, echo, reverb }
+    
+    // MARK: UI Element Outlets
     
     @IBOutlet weak var snailButton: UIButton!
     @IBOutlet weak var chipmunkButton: UIButton!
@@ -27,34 +31,8 @@ class PlaySoundsViewController: UIViewController {
     @IBOutlet weak var reverbButton: UIButton!
     @IBOutlet weak var stopPlaybackButton: UIButton!
     
-    @IBAction func playSoundForButton(_ sender: UIButton) {
-        print("Play Sound Button Pressed")
-        
-        switch (ButtonType(rawValue: sender.tag)!) {
-        case .Slow:
-            playSound(rate: 0.5)
-        case .Fast:
-            playSound(rate: 1.5)
-        case .Chipmunk:
-            playSound(pitch: 1000)
-        case .Vader:
-            playSound(pitch: -1000)
-        case .Echo:
-            playSound(echo: true)
-        case .Reverb:
-            playSound(reverb: true)
-        }
-        
-        configureUI(playState: .Playing)
-    }
+    // MARK: Override Functions
     
-    @IBAction func stopButtonPressed(_ sender: AnyObject) {
-        print("Stop Audio Button Pressed")
-        
-        stopAudio()
-        configureUI(playState: .NotPlaying)
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -63,25 +41,44 @@ class PlaySoundsViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        configureUI(playState: .NotPlaying)
+        configureUI(.notPlaying)
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
-
+    // MARK: UI Element Actions
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    // Handle a user clicking on one of the 6 effects buttons.
+    //
+    // When a user clicks on a button use its tag (setup in the storyboard
+    // builder) and make a call out to playSound with the correct parameters
+    // to play that sound back to the user. Also update all the UI controls
+    // to their playing state.
+    @IBAction func playSoundForButton(_ sender: UIButton) {
+        switch (ButtonType(rawValue: sender.tag)!) {
+        case .slow:
+            playSound(0.5)
+        case .fast:
+            playSound(1.5)
+        case .chipmunk:
+            playSound(pitch: 1000)
+        case .vader:
+            playSound(pitch: -1000)
+        case .echo:
+            playSound(echo: true)
+        case .reverb:
+            playSound(reverb: true)
+        }
+        
+        configureUI(.playing)
     }
-    */
-
+    
+    // Handle a user clicking on the stop button when a audio file is being
+    // played back.
+    @IBAction func stopButtonPressed(_ sender: AnyObject) {
+        stopAudio()
+        configureUI(.notPlaying)
+    }
 }
