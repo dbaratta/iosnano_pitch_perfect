@@ -14,25 +14,17 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     // MARK: UI Element Outlets
     
     @IBOutlet weak var tapToRecordLabel: UILabel!
+    @IBOutlet weak var tapToRecordButton: UIButton!
     @IBOutlet weak var stopRecordingButton: UIButton!
     
     var audioRecorder: AVAudioRecorder!
     
-    
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
     
     // Override the default will appear function to the set the enabled property of the
     // recording button to false. This could also be done via the story board however that
     // editor is confusing and has tons of options, code is a lot more to the point :)
     override func viewWillAppear(_ animated: Bool) {
         stopRecordingButton.isEnabled = false
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
     }
     
     // Function called just before the segue to the next storyboard. Use this function
@@ -50,6 +42,7 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     // Handle a user pressing the button to start a new recording
     @IBAction func recordButtonPress(_ sender: UIButton) {
         tapToRecordLabel.text = "Recording"
+        tapToRecordButton.isEnabled = false
         stopRecordingButton.isEnabled = true
         
         // Setup the file path to store the audio file in
@@ -74,6 +67,7 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     // Handle a user pressing the button to stop recording audio
     @IBAction func stopRecordingButtonPress(_ sender: UIButton) {
         tapToRecordLabel.text = "Tap to Record"
+        tapToRecordButton.isEnabled = true
         stopRecordingButton.isEnabled = false
         
         audioRecorder.stop()
@@ -85,9 +79,11 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     
     func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         if (flag) {
-            self.performSegue(withIdentifier: "stopRecording", sender: audioRecorder.url)
+            performSegue(withIdentifier: "stopRecording", sender: audioRecorder.url)
         } else {
-            print("Recording could not be saved!")
+            let alertController = UIAlertController(title: "Error", message: "Recording Could Not Be Saved", preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(alertController, animated: true)
         }
     }
     
